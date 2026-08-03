@@ -1,28 +1,17 @@
-class CustomError(Exception):
+import time
+import requests
+
+class NetworkError(Exception):
     pass
 
-class ValidationError(CustomError):
-    def __init__(self, message, field):
-        super().__init__(message)
-        self.field = field
-
-class NotFoundError(CustomError):
-    def __init__(self, message):
-        super().__init__(message)
-
-class PermissionError(CustomError):
-    def __init__(self, message):
-        super().__init__(message)
-
-class DatabaseError(CustomError):
-    def __init__(self, message, db_code):
-        super().__init__(message)
-        self.db_code = db_code
-
-class NetworkError(CustomError):
-    pass
-
-class TimeoutError(NetworkError):
-    def __init__(self, message, timeout):
-        super().__init__(message)
-        self.timeout = timeout
+def retry_request(url, retries=3, delay=2):
+    for attempt in range(retries):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response
+        except requests.RequestException as e:
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                raise NetworkError(f"Failed to fetch {url} after {retries} attempts: {e}")
