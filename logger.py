@@ -1,16 +1,13 @@
 import logging
 
-class EnhancedLogger:
+class Logger:
     def __init__(self, name):
         self.logger = logging.getLogger(name)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.INFO)
         handler = logging.StreamHandler()
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
-
-    def debug(self, message):
-        self.logger.debug(message)
 
     def info(self, message):
         self.logger.info(message)
@@ -21,11 +18,7 @@ class EnhancedLogger:
     def error(self, message):
         self.logger.error(message)
 
-    def critical(self, message):
-        self.logger.critical(message)
+    def debug(self, message):
+        self.logger.debug(message)
 
-# Example usage:
-if __name__ == '__main__':
-    log = EnhancedLogger('example_logger')
-    log.info('This is an info message')
-    log.error('This is an error message')
+logger = Logger(__name__)
