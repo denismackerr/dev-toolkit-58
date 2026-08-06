@@ -1,23 +1,24 @@
-from typing import Any, Dict, Callable
+import json
 
-def handle_request(request: Dict[str, Any], process: Callable[[Dict[str, Any]], Dict[str, Any]]) -> Dict[str, Any]:
-    """Handles an incoming request and processes it.
+class CustomError(Exception):
+    pass
 
-    Args:
-        request (Dict[str, Any]): The incoming request data.
-        process (Callable[[Dict[str, Any]], Dict[str, Any]]): A function to process the request.
+def process_data(data):
+    if not isinstance(data, dict):
+        raise CustomError('Data must be a dictionary')
+    try:
+        result = {key: value for key, value in data.items() if value is not None}
+        return json.dumps(result)
+    except (TypeError, ValueError) as e:
+        raise CustomError('Error processing data: ' + str(e))
 
-    Returns:
-        Dict[str, Any]: The processed response.
-    """
-    response = process(request)
-    return response
+def main():
+    test_data = {'key1': 'value1', 'key2': None, 'key3': 'value3'}
+    try:
+        processed = process_data(test_data)
+        print(processed)
+    except CustomError as e:
+        print(e)
 
-
-def log_response(response: Dict[str, Any]) -> None:
-    """Logs the response data.
-
-    Args:
-        response (Dict[str, Any]): The response data to log.
-    """
-    print(f'Response: {response}')
+if __name__ == '__main__':
+    main()
