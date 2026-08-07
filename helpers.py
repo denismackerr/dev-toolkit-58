@@ -1,30 +1,23 @@
-import os
-import shutil
-import json
+def memoize(func):
+    cache = {}
+    def memoized(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+    return memoized
 
-def read_json_file(filepath):
-    with open(filepath, 'r') as file:
-        return json.load(file)
+def expensive_computation(x):
+    # Simulating a costly function
+    result = 0
+    for i in range(1, x + 1):
+        result += i ** 2
+    return result
 
+memoized_computation = memoize(expensive_computation)
 
-def write_json_file(filepath, data):
-    with open(filepath, 'w') as file:
-        json.dump(data, file, indent=4)
-
-
-def create_directory(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-
-def copy_file(source, destination):
-    shutil.copy2(source, destination)
-
-
-def delete_file(filepath):
-    if os.path.isfile(filepath):
-        os.remove(filepath)
-
-
-def list_directory(path):
-    return os.listdir(path)
+# Example usage
+if __name__ == '__main__':
+    print(memoized_computation(1000))
+    print(memoized_computation(1000))  # Should return cached result
+    print(memoized_computation(500))
+    print(memoized_computation(500))  # Should return cached result
