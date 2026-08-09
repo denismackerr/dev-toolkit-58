@@ -1,17 +1,29 @@
-import time
-import requests
-
-class NetworkError(Exception):
+class CustomError(Exception):
     pass
 
-def retry_request(url, retries=3, delay=2):
-    for attempt in range(retries):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            return response
-        except requests.RequestException as e:
-            if attempt < retries - 1:
-                time.sleep(delay)
-            else:
-                raise NetworkError(f"Failed to fetch {url} after {retries} attempts: {e}")
+class NotFoundError(CustomError):
+    def __init__(self, message="Not Found Error Occurred", *args):
+        super().__init__(message, *args)
+
+class ValidationError(CustomError):
+    def __init__(self, message="Validation Error Occurred", *args):
+        super().__init__(message, *args)
+
+class DatabaseError(CustomError):
+    def __init__(self, message="Database Error Occurred", *args):
+        super().__init__(message, *args)
+
+def handle_error(error):
+    if isinstance(error, NotFoundError):
+        print(f"Error: {error}")
+    elif isinstance(error, ValidationError):
+        print(f"Error: {error}")
+    elif isinstance(error, DatabaseError):
+        print(f"Error: {error}")
+    else:
+        print(f"Unknown Error: {error}")
+
+try:
+    raise NotFoundError()
+except CustomError as e:
+    handle_error(e)
