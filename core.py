@@ -1,39 +1,36 @@
-import json
+import logging
 
+class App:
+    def __init__(self, name):
+        self.name = name
+        self.logger = self.setup_logger()
 
-def parse_json(data):
-    """Parse a JSON string into a Python dictionary."""
-    try:
-        return json.loads(data)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON data: {e}")
+    def setup_logger(self):
+        logger = logging.getLogger(self.name)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+        return logger
 
+    def run(self):
+        self.logger.info('Application is starting')
+        try:
+            self.process_data()
+        except Exception as e:
+            self.logger.error('An error occurred: %s', e)
 
-def serialize_to_json(obj, indent=None):
-    """Convert a Python object to a JSON string."""
-    try:
-        return json.dumps(obj, indent=indent)
-    except TypeError as e:
-        raise ValueError(f"Object of type {type(obj).__name__} is not JSON serializable: {e}")
+    def process_data(self):
+        self.logger.info('Processing data...')
+        # Simulating data processing logic
+        result = self.calculate()
+        self.logger.info('Data processed successfully: %s', result)
 
+    def calculate(self):
+        # Placeholder calculation logic
+        return 42
 
-def flatten_dict(nested_dict, parent_key='', sep='_'):
-    """Flatten a nested dictionary."""
-    items = []
-    for k, v in nested_dict.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            items.extend(flatten_dict(v, new_key, sep=sep).items())
-        else:
-            items.append((new_key, v))
-    return dict(items)
-
-
-def deep_merge(dict1, dict2):
-    """Merge two dictionaries recursively."""
-    for key, value in dict2.items():
-        if isinstance(value, dict) and key in dict1:
-            dict1[key] = deep_merge(dict1[key], value)
-        else:
-            dict1[key] = value
-    return dict1
+if __name__ == '__main__':
+    app = App('MyApp')
+    app.run()
