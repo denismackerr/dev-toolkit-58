@@ -1,12 +1,23 @@
 import re
 
-def validate_input(input_value):
-    if not isinstance(input_value, str):
-        raise ValueError('Input must be a string.')
-    if not input_value:
-        raise ValueError('Input cannot be empty.')
-    if len(input_value) > 100:
-        raise ValueError('Input cannot exceed 100 characters.')
-    if not re.match('^[a-zA-Z0-9 ]*$', input_value):
-        raise ValueError('Input can only contain alphanumeric characters and spaces.')
-    return True
+def validate_email(email):
+    email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    return re.match(email_regex, email) is not None
+
+
+def validate_positive_integer(value):
+    try:
+        ivalue = int(value)
+        return ivalue > 0
+    except ValueError:
+        return False
+
+
+def validate_input(data):
+    if not isinstance(data, dict):
+        return False
+    return all([
+        validate_email(data.get('email', '')),  
+        validate_positive_integer(data.get('age', 0))
+    ])
+
