@@ -1,28 +1,29 @@
-import time
+import json
 import requests
 
-class NetworkError(Exception):
-    pass
+class CryptoDataProcessor:
+    def __init__(self, api_url):
+        self.api_url = api_url
 
-def retry_request(url, max_retries=3, delay=2):
-    for attempt in range(max_retries):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.HTTPError:
-            raise NetworkError(f'HTTP error occurred: {response.status_code}')
-        except requests.exceptions.RequestException:
-            if attempt < max_retries - 1:
-                time.sleep(delay)
-                continue
-            raise NetworkError('Max retries exceeded')
-    return None
+    def fetch_data(self, crypto_symbol):
+        response = requests.get(f'{self.api_url}/{crypto_symbol}')
+        response.raise_for_status()
+        return response.json()
 
-if __name__ == '__main__':
-    url = 'https://api.example.com/data'
-    try:
-        data = retry_request(url)
-        print(data)
-    except NetworkError as ne:
-        print(ne)
+    def process_data(self, data):
+        return {
+            'symbol': data['symbol'],
+            'price': float(data['price']),
+            'market_cap': int(data['market_cap']),
+            'timestamp': data['timestamp']
+        }
+
+    def save_to_json(self, processed_data, file_name):
+        with open(file_name, 'w') as json_file:
+            json.dump(processed_data, json_file, indent=4)
+
+    def handle_crypto_data(self, crypto_symbol, output_file):
+        raw_data = self.fetch_data(crypto_symbol)
+        processed_data = self.process_data(raw_data)
+        self.save_to_json(processed_data, output_file)
+
