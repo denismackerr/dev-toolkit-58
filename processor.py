@@ -1,29 +1,35 @@
-import json
-import requests
+from typing import List
 
-class CryptoDataProcessor:
-    def __init__(self, api_url):
-        self.api_url = api_url
+class TransactionProcessor:
+    """
+    Processes cryptocurrency transactions.
+    """
 
-    def fetch_data(self, crypto_symbol):
-        response = requests.get(f'{self.api_url}/{crypto_symbol}')
-        response.raise_for_status()
-        return response.json()
+    def __init__(self, fee_percentage: float) -> None:
+        """
+        Initializes the transaction processor with a fee percentage.
+        """        
+        self.fee_percentage = fee_percentage
 
-    def process_data(self, data):
-        return {
-            'symbol': data['symbol'],
-            'price': float(data['price']),
-            'market_cap': int(data['market_cap']),
-            'timestamp': data['timestamp']
-        }
+    def calculate_fee(self, amount: float) -> float:
+        """
+        Calculates the fee for a given transaction amount.
+        
+        :param amount: The transaction amount.
+        :return: The calculated fee.
+        """        
+        return amount * self.fee_percentage
 
-    def save_to_json(self, processed_data, file_name):
-        with open(file_name, 'w') as json_file:
-            json.dump(processed_data, json_file, indent=4)
+    def process_transactions(self, transactions: List[float]) -> List[float]:
+        """
+        Processes a list of transaction amounts.
+        
+        :param transactions: A list of transaction amounts.
+        :return: A list of fees for each transaction.
+        """        
+        return [self.calculate_fee(amount) for amount in transactions]
 
-    def handle_crypto_data(self, crypto_symbol, output_file):
-        raw_data = self.fetch_data(crypto_symbol)
-        processed_data = self.process_data(raw_data)
-        self.save_to_json(processed_data, output_file)
-
+if __name__ == '__main__':
+    processor = TransactionProcessor(0.01)
+    fees = processor.process_transactions([100.0, 250.5, 75.25])
+    print(fees)  # Output fees for the transactions
