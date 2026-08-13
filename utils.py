@@ -1,33 +1,23 @@
 import json
 import requests
-
-API_URL = 'https://api.coingecko.com/api/v3/'
-
-
-def fetch_crypto_data(crypto_id):
-    response = requests.get(f'{API_URL}coins/markets', params={'vs_currency': 'usd', 'ids': crypto_id})
+from datetime import datetime
+def fetch_crypto_data(symbol, currency='USD'):
+    url = f'https://api.coingecko.com/api/v3/simple/price?ids={symbol}&vs_currencies={currency}'
+    response = requests.get(url)
     if response.status_code == 200:
-        return json.loads(response.text)
+        return response.json()
     return None
-
-
-def get_price(crypto_data):
-    if crypto_data and isinstance(crypto_data, list):
-        return crypto_data[0].get('current_price')
-    return None
-
-
-def convert_to_json(data):
-    try:
-        return json.dumps(data, indent=4)
-    except (TypeError, OverflowError):
+def format_crypto_data(data):
+    if not data:
         return None
+    formatted_data = {}
+    for key, value in data.items():
+        formatted_data[key] = {
+            'price': value.get('usd'),
+            'timestamp': datetime.utcnow().isoformat()
+        }
+    return formatted_data
 
-
-def display_crypto_info(crypto_id):
-    data = fetch_crypto_data(crypto_id)
-    price = get_price(data)
-    if price:
-        print(f'The current price of {crypto_id} is ${price}.')
-    else:
-        print('Data not available.')
+def save_data_to_json(data, filename):
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
