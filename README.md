@@ -1,44 +1,42 @@
-# dev-toolkit-58
+# Dev Toolkit 58
 
-A versatile Python library designed to streamline common development tasks and improve productivity. With a focus on user-friendly interfaces, this toolkit provides a set of utilities that simplify coding processes, automate repetitive tasks, and enhance overall workflow efficiency.
+Dev Toolkit 58 is a powerful Python-based library designed for crypto developers, offering an array of tools for analyzing cryptocurrency market trends and executing trading strategies with ease. This toolkit streamlines the development process and enhances functionality, making it an essential resource for both novice and experienced developers in the cryptocurrency space.
 
 ## Features
-
-- **File Management**: Effortlessly organize, copy, and delete files or directories with a single command, complete with error handling.
-- **Data Validation**: Intuitive validators for common data types, ensuring accuracy and helping to reduce bugs in user inputs and configurations.
-- **API Integration**: Simplifies making HTTP requests and parsing JSON responses, complete with built-in error handling and response validation.
-- **Logging Utility**: Comprehensive logging options that can be customized according to severity levels, making debugging and monitoring hassle-free.
+- **Market Analysis Tools**: Access historical and live market data, including price trends and trading volumes.
+- **Trading Strategy Simulator**: Test and optimize your trading bots using historical data to analyze performance before going live.
+- **Real-time Alerts**: Set up customized alerts for price movements, market changes, and other significant events using webhook or email notifications.
+- **Portfolio Management**: Track and manage your crypto portfolio efficiently with features to visualize gains, losses, and investment diversity.
 
 ## Installation
-
-To install the dev-toolkit-58, simply run the following command in your terminal:
+To get started, clone the repository and install the required dependencies:
 
 ```bash
-pip install dev-toolkit-58
+git clone https://github.com/yourusername/dev-toolkit-58.git
+cd dev-toolkit-58
+pip install -r requirements.txt
 ```
 
-## Basic Usage Example
+Ensure you have Python 3.7 or higher installed on your system. If you don't have pip, you can install it via `get-pip.py`.
 
-Here’s a quick example of how to use the dev-toolkit-58 for file management and data validation:
+## Basic Usage
+Here’s a simple example demonstrating how to fetch and analyze the current price of Bitcoin using Dev Toolkit 58:
 
 ```python
-from dev_toolkit_58 import FileManager, DataValidator
+from dev_toolkit import CryptoAnalyzer
 
-# File Management Example
-file_mgr = FileManager()
-file_mgr.copy('source.txt', 'destination.txt')
+# Initialize the analyzer with a cryptocurrency symbol
+analyzer = CryptoAnalyzer('BTC')
 
-# Data Validation Example
-validator = DataValidator()
-if validator.validate_email('example@example.com'):
-    print("Valid Email Address")
-else:
-    print("Invalid Email Address")
+# Fetch and display current price
+current_price = analyzer.get_current_price()
+print(f"The current price of Bitcoin is ${current_price:.2f}")
+
+# Set up an alert for a specific target price
+analyzer.set_alert(target_price=60000, alert_type='email', email_address='your-email@example.com')
 ```
 
-This example demonstrates how you can quickly copy files and validate email addresses, encapsulating the essence of the toolkit’s functionality.
-
 ## License
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)  
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Dev Toolkit 58 is licensed under the MIT License. See [LICENSE](LICENSE) for details.
