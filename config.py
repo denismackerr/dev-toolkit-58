@@ -1,18 +1,12 @@
-import json
 import os
 
-DEFAULT_CONFIG = {
-    'setting1': 'default_value1',
-    'setting2': 'default_value2',
-    'setting3': 10,
-}
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'default_secret_key'
+    DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 't']
+    DATABASE_URI = os.environ.get('DATABASE_URI') or 'sqlite:///app.db'
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-def load_config(file_path):
-    if os.path.isfile(file_path):
-        with open(file_path, 'r') as file:
-            try:
-                custom_config = json.load(file)
-            except json.JSONDecodeError:
-                return DEFAULT_CONFIG
-        return {**DEFAULT_CONFIG, **custom_config}
-    return DEFAULT_CONFIG
+    @staticmethod
+    def init_app(app):
+        app.config.from_object(Config)
+        app.secret_key = Config.SECRET_KEY
