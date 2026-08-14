@@ -1,13 +1,47 @@
 import logging
-from logging.handlers import RotatingFileHandler
 
-def setup_logger(log_file='app.log', max_bytes=10**6, backup_count=5):
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    return logger
+class Logger:
+    """
+    Custom logger for logging messages.
+    """
 
-logger = setup_logger()
+    def __init__(self, name: str) -> None:
+        """
+        Initializes the logger with a given name.
+
+        :param name: The name of the logger.
+        """
+        self.logger = logging.getLogger(name)
+        logging.basicConfig(level=logging.INFO)
+
+    def info(self, message: str) -> None:
+        """
+        Logs an informational message.
+
+        :param message: The message to log.
+        """
+        self.logger.info(message)
+
+    def error(self, message: str) -> None:
+        """
+        Logs an error message.
+
+        :param message: The message to log.
+        """
+        self.logger.error(message)
+
+    def warning(self, message: str) -> None:
+        """
+        Logs a warning message.
+
+        :param message: The message to log.
+        """
+        self.logger.warning(message)
+
+    def debug(self, message: str) -> None:
+        """
+        Logs a debug message.
+
+        :param message: The message to log.
+        """
+        self.logger.debug(message)
