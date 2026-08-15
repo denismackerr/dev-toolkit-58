@@ -1,35 +1,30 @@
-from typing import List
+import json
 
-class TransactionProcessor:
-    """
-    Processes cryptocurrency transactions.
-    """
+class InputValidationError(Exception):
+    pass
 
-    def __init__(self, fee_percentage: float) -> None:
-        """
-        Initializes the transaction processor with a fee percentage.
-        """        
-        self.fee_percentage = fee_percentage
+def validate_input(data):
+    if not isinstance(data, dict):
+        raise InputValidationError('Input must be a dictionary')
+    if 'amount' not in data or not isinstance(data['amount'], (int, float)):
+        raise InputValidationError('Input must contain a numeric amount')
+    if 'currency' not in data or not isinstance(data['currency'], str):
+        raise InputValidationError('Input must contain a valid currency string')
 
-    def calculate_fee(self, amount: float) -> float:
-        """
-        Calculates the fee for a given transaction amount.
-        
-        :param amount: The transaction amount.
-        :return: The calculated fee.
-        """        
-        return amount * self.fee_percentage
-
-    def process_transactions(self, transactions: List[float]) -> List[float]:
-        """
-        Processes a list of transaction amounts.
-        
-        :param transactions: A list of transaction amounts.
-        :return: A list of fees for each transaction.
-        """        
-        return [self.calculate_fee(amount) for amount in transactions]
+def process_transaction(data):
+    validate_input(data)
+    amount = data['amount']
+    currency = data['currency']
+    result = f'Transaction of {amount} {currency} processed'
+    return result
 
 if __name__ == '__main__':
-    processor = TransactionProcessor(0.01)
-    fees = processor.process_transactions([100.0, 250.5, 75.25])
-    print(fees)  # Output fees for the transactions
+    raw_data = input('Enter transaction data as JSON: ')
+    try:
+        data = json.loads(raw_data)
+        result = process_transaction(data)
+        print(result)
+    except InputValidationError as e:
+        print(f'Input validation error: {e}')
+    except json.JSONDecodeError:
+        print('Invalid JSON input')
