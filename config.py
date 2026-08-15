@@ -1,12 +1,22 @@
+import json
 import os
 
-class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'default_secret_key'
-    DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 't']
-    DATABASE_URI = os.environ.get('DATABASE_URI') or 'sqlite:///app.db'
-    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+class ConfigLoader:
+    def __init__(self, config_file='config.json', defaults=None):
+        self.config_file = config_file
+        self.defaults = defaults or {}
+        self.config = self.load_config()
 
-    @staticmethod
-    def init_app(app):
-        app.config.from_object(Config)
-        app.secret_key = Config.SECRET_KEY
+    def load_config(self):
+        if not os.path.exists(self.config_file):
+            return self.defaults
+        with open(self.config_file, 'r') as file:
+            config_data = json.load(file)
+        return {**self.defaults, **config_data}
+
+    def get(self, key, default=None):
+        return self.config.get(key, default)
+
+if __name__ == '__main__':
+    loader = ConfigLoader()
+    print(loader.config)
