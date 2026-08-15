@@ -1,1 +1,17 @@
-MIME_TYPES = {\n    'html': 'text/html',\n    'css': 'text/css',\n    'javascript': 'application/javascript',\n    'json': 'application/json',\n    'xml': 'application/xml',\n    'txt': 'text/plain',\n    'png': 'image/png',\n    'jpg': 'image/jpeg',\n    'gif': 'image/gif',\n    'svg': 'image/svg+xml',\n}\n\nHTTP_STATUS_CODES = {\n    200: 'OK',\n    201: 'Created',\n    204: 'No Content',\n    400: 'Bad Request',\n    401: 'Unauthorized',\n    403: 'Forbidden',\n    404: 'Not Found',\n    500: 'Internal Server Error',\n}\n\nDEFAULT_TIMEOUT = 30\nDEFAULT_RETRIES = 3
+import time
+import random
+
+def retry_operation(max_retries=3, delay=2, backoff=2):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            retries = 0
+            while retries < max_retries:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    retries += 1
+                    sleep_time = delay * (backoff ** (retries - 1)) + random.uniform(0, 1)
+                    time.sleep(sleep_time)
+            raise Exception(f'Operation failed after {max_retries} retries')
+        return wrapper
+    return decorator
