@@ -1,17 +1,34 @@
-import time
-import random
+API_URL = 'https://api.crypto.com'
 
-def retry_operation(max_retries=3, delay=2, backoff=2):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            retries = 0
-            while retries < max_retries:
-                try:
-                    return func(*args, **kwargs)
-                except Exception as e:
-                    retries += 1
-                    sleep_time = delay * (backoff ** (retries - 1)) + random.uniform(0, 1)
-                    time.sleep(sleep_time)
-            raise Exception(f'Operation failed after {max_retries} retries')
-        return wrapper
-    return decorator
+SUPPORTED_CURRENCIES = [
+    'BTC',
+    'ETH',
+    'LTC',
+    'XRP',
+    'DOT',
+]
+
+DEFAULT_DECIMALS = 8
+
+TRANSACTION_FEE_RATE = 0.0025
+
+MAX_TRANSACTION_LIMIT = 10000
+
+MIN_TRANSACTION_LIMIT = 1
+
+CURRENCY_SYMBOLS = {
+    'BTC': '₿',
+    'ETH': 'Ξ',
+    'LTC': 'Ł',
+    'XRP': 'X',
+    'DOT': '•',
+}
+
+SUPPORTED_NETWORKS = [
+    'mainnet',
+    'testnet',
+]
+
+RETRY_ATTEMPTS = 5
+
+RETRY_DELAY = 2
