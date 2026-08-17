@@ -1,36 +1,15 @@
-import logging
+from typing import List, Dict, Any
 
-class App:
-    def __init__(self, name):
-        self.name = name
-        self.logger = self.setup_logger()
+class CryptoAnalyzer:
+    def __init__(self, data: List[Dict[str, Any]]) -> None:
+        self.data = data
 
-    def setup_logger(self):
-        logger = logging.getLogger(self.name)
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
-        return logger
+    def calculate_average_price(self) -> float:
+        total_price = sum(item['price'] for item in self.data)
+        return total_price / len(self.data) if self.data else 0.0
 
-    def run(self):
-        self.logger.info('Application is starting')
-        try:
-            self.process_data()
-        except Exception as e:
-            self.logger.error('An error occurred: %s', e)
+    def get_top_n_coins(self, n: int) -> List[Dict[str, Any]]:
+        return sorted(self.data, key=lambda x: x['market_cap'], reverse=True)[:n]
 
-    def process_data(self):
-        self.logger.info('Processing data...')
-        # Simulating data processing logic
-        result = self.calculate()
-        self.logger.info('Data processed successfully: %s', result)
-
-    def calculate(self):
-        # Placeholder calculation logic
-        return 42
-
-if __name__ == '__main__':
-    app = App('MyApp')
-    app.run()
+    def filter_by_min_volume(self, min_volume: float) -> List[Dict[str, Any]]:
+        return [item for item in self.data if item['volume'] >= min_volume]
