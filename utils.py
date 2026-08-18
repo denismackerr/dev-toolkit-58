@@ -1,26 +1,30 @@
-import json
-import requests
-
-def fetch_crypto_data(symbol, vs_currency='usd'):
-    url = f'https://api.coingecko.com/api/v3/simple/price?ids={symbol}&vs_currencies={vs_currency}'
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.json()
+from typing import List
 
 
-def format_crypto_data(data):
-    formatted_data = {
-        'symbol': data['id'],
-        'price': data['usd'],
-    }
-    return json.dumps(formatted_data, indent=4)
+def calculate_average(prices: List[float]) -> float:
+    """Calculate the average price from a list of prices."""
+    return sum(prices) / len(prices) if prices else 0.0
 
 
-def save_to_file(data, filename):
-    with open(filename, 'w') as f:
-        f.write(data)
+def format_currency(amount: float, currency_symbol: str = '$') -> str:
+    """Format the amount as a currency string."""
+    return f'{currency_symbol}{amount:,.2f}'
 
 
-def load_from_file(filename):
-    with open(filename, 'r') as f:
-        return f.read()
+def is_valid_address(address: str) -> bool:
+    """Validate if the address is in a proper format."""
+    return len(address) == 42 and address.startswith('0x')
+
+
+def generate_transaction_id() -> str:
+    """Generate a unique transaction ID."""
+    import uuid
+    return str(uuid.uuid4())
+
+
+def parse_decimal(value: str) -> float:
+    """Parse a decimal string into a float."""
+    try:
+        return float(value)
+    except ValueError:
+        return 0.0
