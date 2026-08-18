@@ -1,32 +1,34 @@
-def flatten_list(nested_list):
-    result = []
-    for item in nested_list:
-        if isinstance(item, list):
-            result.extend(flatten_list(item))
-        else:
-            result.append(item)
-    return result
+import json
 
-def generate_unique_id(length=8):
-    import random
-    import string
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for _ in range(length))
+class CryptoError(Exception):
+    pass
 
-def debounce(wait):
-    from threading import Timer
-    def decorator(fn):
-        timer = None
-        def debounced(*args, **kwargs):
-            nonlocal timer
-            if timer is not None:
-                timer.cancel()
-            timer = Timer(wait, lambda: fn(*args, **kwargs))
-            timer.start()
-        return debounced
-    return decorator
 
-def to_json(data):
-    import json
-    return json.dumps(data, indent=4)
+def load_json(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        raise CryptoError('File not found: {}'.format(file_path))
+    except json.JSONDecodeError:
+        raise CryptoError('Error decoding JSON from file: {}'.format(file_path))
 
+
+def save_json(data, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+    except IOError:
+        raise CryptoError('IO error while saving file: {}'.format(file_path))
+
+
+def calculate_percentage_change(old_value, new_value):
+    if old_value == 0:
+        raise CryptoError('Old value cannot be zero for percentage calculation')
+    return ((new_value - old_value) / old_value) * 100
+
+
+def validate_address(address):
+    if len(address) != 42 or not address.startswith('0x'):
+        raise CryptoError('Invalid address format')
+    return True
