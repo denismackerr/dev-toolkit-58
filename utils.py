@@ -1,30 +1,20 @@
-from typing import List
+import json
+import requests
 
+class CryptoData:
+    def __init__(self, base_url):
+        self.base_url = base_url
 
-def calculate_average(prices: List[float]) -> float:
-    """Calculate the average price from a list of prices."""
-    return sum(prices) / len(prices) if prices else 0.0
+    def fetch_data(self, endpoint):
+        response = requests.get(f'{self.base_url}{endpoint}')
+        if response.status_code != 200:
+            raise ValueError('Failed to fetch data')
+        return response.json()
 
+    def process_data(self, data):
+        return { 'price': data['price'], 'timestamp': data['timestamp'] }
 
-def format_currency(amount: float, currency_symbol: str = '$') -> str:
-    """Format the amount as a currency string."""
-    return f'{currency_symbol}{amount:,.2f}'
-
-
-def is_valid_address(address: str) -> bool:
-    """Validate if the address is in a proper format."""
-    return len(address) == 42 and address.startswith('0x')
-
-
-def generate_transaction_id() -> str:
-    """Generate a unique transaction ID."""
-    import uuid
-    return str(uuid.uuid4())
-
-
-def parse_decimal(value: str) -> float:
-    """Parse a decimal string into a float."""
-    try:
-        return float(value)
-    except ValueError:
-        return 0.0
+    def get_crypto_price(self, crypto_symbol):
+        endpoint = f'/price/{crypto_symbol}'
+        data = self.fetch_data(endpoint)
+        return self.process_data(data)
