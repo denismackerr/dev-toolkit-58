@@ -1,20 +1,31 @@
 import json
-import requests
 
-class CryptoData:
-    def __init__(self, base_url):
-        self.base_url = base_url
+class CryptoError(Exception):
+    pass
 
-    def fetch_data(self, endpoint):
-        response = requests.get(f'{self.base_url}{endpoint}')
-        if response.status_code != 200:
-            raise ValueError('Failed to fetch data')
-        return response.json()
+def load_json(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        raise CryptoError(f"File not found: {file_path}")
+    except json.JSONDecodeError:
+        raise CryptoError(f"Invalid JSON in file: {file_path}")
 
-    def process_data(self, data):
-        return { 'price': data['price'], 'timestamp': data['timestamp'] }
+def save_json(data, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file)
+    except Exception as e:
+        raise CryptoError(f"Failed to write to {file_path}: {str(e)}")
 
-    def get_crypto_price(self, crypto_symbol):
-        endpoint = f'/price/{crypto_symbol}'
-        data = self.fetch_data(endpoint)
-        return self.process_data(data)
+def validate_address(address):
+    if not isinstance(address, str) or len(address) != 42:
+        raise CryptoError(f"Invalid address format: {address}")
+    return True
+
+def convert_to_float(value):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        raise CryptoError(f"Cannot convert {value} to float")
