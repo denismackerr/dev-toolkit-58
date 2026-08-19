@@ -1,30 +1,32 @@
 import json
+import requests
+from requests.exceptions import RequestException
 
-class InputValidationError(Exception):
-    pass
+class CryptoProcessor:
+    def __init__(self, api_url):
+        self.api_url = api_url
 
-def validate_input(data):
-    if not isinstance(data, dict):
-        raise InputValidationError('Input must be a dictionary')
-    if 'amount' not in data or not isinstance(data['amount'], (int, float)):
-        raise InputValidationError('Input must contain a numeric amount')
-    if 'currency' not in data or not isinstance(data['currency'], str):
-        raise InputValidationError('Input must contain a valid currency string')
+    def fetch_data(self):
+        try:
+            response = requests.get(self.api_url)
+            response.raise_for_status()
+            return response.json()
+        except RequestException as e:
+            return {'error': str(e)}
+        except json.JSONDecodeError:
+            return {'error': 'Invalid JSON response'}
 
-def process_transaction(data):
-    validate_input(data)
-    amount = data['amount']
-    currency = data['currency']
-    result = f'Transaction of {amount} {currency} processed'
-    return result
+    def process_data(self, data):
+        if 'error' in data:
+            return data
+        # Process valid data
+        return {'processed_data': data}
+
+    def run(self):
+        data = self.fetch_data()
+        result = self.process_data(data)
+        return result
 
 if __name__ == '__main__':
-    raw_data = input('Enter transaction data as JSON: ')
-    try:
-        data = json.loads(raw_data)
-        result = process_transaction(data)
-        print(result)
-    except InputValidationError as e:
-        print(f'Input validation error: {e}')
-    except json.JSONDecodeError:
-        print('Invalid JSON input')
+    processor = CryptoProcessor('https://api.example.com/crypto')
+    print(processor.run())
